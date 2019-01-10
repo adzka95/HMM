@@ -4,12 +4,12 @@ import java.util.Scanner;
 
 public class FileReader {
 
-    private float[] probability;
-    private float changeDiceProbability;
+    private double[] probability;
+    private double changeDiceProbability;
     private int numberOfSides = 6;
 
     public FileReader(String path){
-        probability  = new float[numberOfSides];
+        probability  = new double[numberOfSides];
         readDataFromFile(path);
     }
 
@@ -19,13 +19,13 @@ public class FileReader {
             for(int i=0; i<numberOfSides; i++){
                 if(input.hasNextLine()){
                     String[] s = input.nextLine().split("/");
-                    float a = Float.parseFloat(s[0]);
-                    float b = Float.parseFloat(s[1]);
+                    double a = Double.parseDouble(s[0]);
+                    double b = Double.parseDouble(s[1]);
                     probability[i] = a/b;
                 }
             }
             if(input.hasNextLine()){
-                changeDiceProbability = Float.parseFloat(input.nextLine());
+                changeDiceProbability = Double.parseDouble(input.nextLine());
             }
         }
         catch (FileNotFoundException e) {
@@ -33,11 +33,11 @@ public class FileReader {
         }
     }
 
-    public float[] getProbability() {
+    public double[] getProbability() {
         return probability;
     }
 
-    public float getChangeDiceProbability() {
+    public double getChangeDiceProbability() {
         return changeDiceProbability;
     }
 

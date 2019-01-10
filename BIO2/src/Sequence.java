@@ -4,15 +4,18 @@ public class Sequence {
     private int l;
     private int[] sequence;
     private boolean [] throwIsCheated;
-    private float[][] allPropabilityRange;
-    private float[] changeDiceProbability;
+    private double[][] allPropability;
+    private double[][] allPropabilityRange;
+    private double[] changeDiceProbability;
     private int numberOfSides;
+    private double fairDiceStartPropability;
 
-    public Sequence(int l){
+    public Sequence(int l, double fairDiceStartPropability){
         this.l = l;
         this.sequence = new int[l];
         this.throwIsCheated = new boolean[l];
-        changeDiceProbability = new float[2];
+        changeDiceProbability = new double[2];
+        this.fairDiceStartPropability = fairDiceStartPropability;
         GenerateSequence();
     }
 
@@ -20,11 +23,11 @@ public class Sequence {
         fillPropabilityData();
         int diceIndex=0;
         Random generator = new Random();
+        int fairStart = generator.nextInt(100);
+        if(fairDiceStartPropability*100 < fairStart){
+            diceIndex= Dice.LOADED.getIndex();
+        }
         for(int j =0; j<l; j++){
-            int changeDice = generator.nextInt(100);
-            if(changeDice<changeDiceProbability[diceIndex]*100){
-                diceIndex = (diceIndex+1)%2;
-            }
             if(diceIndex==Dice.LOADED.getIndex()){
                 throwIsCheated[j] =true;
             }
@@ -35,71 +38,58 @@ public class Sequence {
                     break;
                 }
             }
+            int changeDice = generator.nextInt(100);
+            if(changeDice<changeDiceProbability[diceIndex]*100){
+                diceIndex = (diceIndex+1)%2;
+            }
         }
     }
 
     private void fillPropabilityData(){
+        allPropability = new double[2][numberOfSides];
         FileReader fairProp = new FileReader("src/fairProbability.txt");
-        float[] fairProbability = fairProp.getProbability();
+        allPropability[Dice.FAIR.getIndex()] = fairProp.getProbability();
         changeDiceProbability[Dice.FAIR.getIndex()]= fairProp.getChangeDiceProbability();
 
         FileReader loadedProp = new FileReader("src/loadedProbability.txt");
-        float[] loadedProbability = loadedProp.getProbability();
+        allPropability[Dice.LOADED.getIndex()] = loadedProp.getProbability();
         changeDiceProbability[Dice.LOADED.getIndex()]= loadedProp.getChangeDiceProbability();
 
         numberOfSides = fairProp.getNumberOfSides();
 
-        allPropabilityRange = new float[2][numberOfSides];
-        allPropabilityRange[Dice.FAIR.getIndex()][0] = fairProbability[0]*100;
+        allPropabilityRange = new double[2][numberOfSides];
+        allPropabilityRange[Dice.FAIR.getIndex()][0] = allPropability[Dice.FAIR.getIndex()][0]*100;
         for(int j = 1; j<numberOfSides; j++){
-            allPropabilityRange[Dice.FAIR.getIndex()][j]= allPropabilityRange[Dice.FAIR.getIndex()][j-1]+ fairProbability[j]*100;
+            allPropabilityRange[Dice.FAIR.getIndex()][j]= allPropabilityRange[Dice.FAIR.getIndex()][j-1]+ allPropability[Dice.FAIR.getIndex()][j]*100;
         }
-        allPropabilityRange[Dice.LOADED.getIndex()][0] = loadedProbability[0]*100;
+        allPropabilityRange[Dice.LOADED.getIndex()][0] = allPropability[Dice.LOADED.getIndex()][0]*100;
         for(int j = 1; j<numberOfSides; j++){
-            allPropabilityRange[Dice.LOADED.getIndex()][j]= allPropabilityRange[Dice.LOADED.getIndex()][j-1]+ loadedProbability[j]*100;
+            allPropabilityRange[Dice.LOADED.getIndex()][j]= allPropabilityRange[Dice.LOADED.getIndex()][j-1]+ allPropability[Dice.LOADED.getIndex()][j]*100;
         }
-    }
-
-    public void printSequence(){
-        for(int i=0; i<l; i++) {
-            System.out.print(sequence[i] + ", ");
-        }
-        System.out.println();
-    }
-
-    public void printThrowIsCheat(){
-        for(int i=0; i<l; i++) {
-            if(throwIsCheated[i]){
-                System.out.print("L, ");
-            }
-            else {
-                System.out.print("F, ");
-            }
-        }
-        System.out.println();
     }
 
     public int getL() {
         return l;
     }
 
-    public void setL(int l) {
-        this.l = l;
-    }
-
     public int[] getSequence() {
         return sequence;
-    }
-
-    public void setSequence(int[] sequence) {
-        this.sequence = sequence;
     }
 
     public boolean[] getThrowIsCheated() {
         return throwIsCheated;
     }
 
-    public void setThrowIsCheated(boolean[] throwIsNotCheated) {
-        this.throwIsCheated = throwIsNotCheated;
+    public double getFairDiceStartPropability() {
+        return fairDiceStartPropability;
     }
+
+    public double[][] getAllPropability() {
+        return allPropability;
+    }
+
+    public double[] getChangeDiceProbability() {
+        return changeDiceProbability;
+    }
+
 }
