@@ -1,11 +1,12 @@
 public class Validator {
-    public static void validate(boolean[] target, boolean [] pretiction){
+    public static void validate(boolean[] target, boolean [] pretiction, String name){
         int numberOfErrors = 0;
         for(int i=0; i<target.length; i++){
             if(target[i]!=pretiction[i]){
                 numberOfErrors++;
             }
         }
+        System.out.println("\nAlgorytm "+ name);
         System.out.println("Ilość błędów: " + numberOfErrors);
         int numberOfGoodPredictions = target.length - numberOfErrors;
         System.out.println("Ilość poprawnych predykcji: " + numberOfGoodPredictions);
